@@ -5,6 +5,7 @@ import "firebase/auth";
 
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollectionData } from "react-firebase-hooks/firestore";
+import React from "react";
 
 
 firebase.initializeApp({
@@ -24,17 +25,19 @@ function App() {
     <div className="App">
       <header>
           <section>
-            {/*{user ? </ChatRoom> : <SignIn />}*/}
+            {user ? <ChatRoom/> : <SignIn />}
           </section>
       </header>
     </div>
   );
 }
   function SignIn() {
+  const signInWithGoogle = () => {
+    const provider = new firebase.auth.GoogleAuthProvider()
+    auth.signInWithPopup(provider).then(r => console.log(r)).catch(console.log);
+  }
     return (
-        <div>
-
-        </div>
+      <button onClick={signInWithGoogle}>Zaloguj sie za pomocą google</button>
     )
   }
 
@@ -45,5 +48,6 @@ function App() {
         </div>
     )
   }
+
 
 export default App;
