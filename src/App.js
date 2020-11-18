@@ -62,7 +62,13 @@ function App() {
   function ChatMessage(props) {
     console.log("4:00")
       const { text, uid } = props.message;
-      return <p>{text}</p>
+      const messageClass = uid == auth.currentUser.uid ? "sent": "received";
+
+      return (
+          <div className={`message ${messageClass}`}>
+            <p>{text}</p>
+          </div>
+      )
   }
 
 
