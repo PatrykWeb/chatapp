@@ -5,7 +5,7 @@ import "firebase/auth";
 
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import React from "react";
+import React, {useState} from "react";
 
 
 firebase.initializeApp({
@@ -52,20 +52,45 @@ function App() {
   function ChatRoom() {
     const messagesChat = firestore.collection("messages");
     const query = messagesChat.orderBy("createdAt").limit(25);
-    const [messagesUsers] = useCollectionData(query, {idField: 'id'})
+    const [messagesUsers] = useCollectionData(query, {idField: 'id'});
+
+    const [formValue, setFormValue] = useState("");
+
+
+    const sendMessage = async (e) => {
+      e.preventDefault()
+
+      const {uid, photoURL} = auth.currentUser;
+
+      await messagesChat.add({
+        text: formValue,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        uid,
+        photoURL
+      })
+      setFormValue("")
+    }
+
     return(
+        <>
         <div>
             {messagesUsers && messagesUsers.map(msg => <ChatMessage key = {msg.id} message = {msg}/>)}
         </div>
+          <form onSubmit={sendMessage}>
+            <input value={formValue} onChange={(event => setFormValue(event.target.value))}/>
+            <button type={"submit"}>Wyślij</button>
+          </form>
+          </>
     )
   }
   function ChatMessage(props) {
-    console.log("4:00")
-      const { text, uid } = props.message;
+    console.log("4:00");
+      const { text, uid, photoURL } = props.message;
       const messageClass = uid == auth.currentUser.uid ? "sent": "received";
 
       return (
           <div className={`message ${messageClass}`}>
+              <img src={photoURL} />
             <p>{text}</p>
           </div>
       )
